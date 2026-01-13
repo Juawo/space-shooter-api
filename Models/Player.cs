@@ -1,11 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace SpaceShooterApi.Models;
 
 public class Player
 {
-    public Guid Id { get; private set; }
-    public string Nickname { get; private set; }
-    public int Age { get; private set; }
-    public string Country { get; private set; }
+    [Key]
+    public required Guid Id { get;  set; }
+    public required  string Nickname { get;  set; }
+    public required int Age { get;  set; }
+    public required string Country { get; set; }
 
     public Player(Guid id, string nickname, int age, string country)
     {
