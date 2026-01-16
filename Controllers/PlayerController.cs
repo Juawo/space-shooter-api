@@ -31,7 +31,7 @@ public class PlayerController(PlayerService playerService) : ControllerBase
     {
         var player = createPlayerDto.ToPlayerFromCreateDto();
         await _playerService.CreatePlayer(player);
-        return CreatedAtAction(nameof(GetPlayerById), new { id = player.Id }, player.ToPlayerDto());
+        return CreatedAtAction(nameof(GetPlayerById), new { playerId = player.Id }, player.ToPlayerDto());
     }
 
     [HttpPut("{playerId:guid}")]
