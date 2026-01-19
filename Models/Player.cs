@@ -15,7 +15,7 @@ public class Player
         
     }
 
-    public Player(Guid id, string nickname, int age, string country)
+    public Player(string nickname, int age, string country)
     {
         Nickname = nickname;
         Age = age;
