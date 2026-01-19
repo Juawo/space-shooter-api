@@ -34,7 +34,7 @@ public class PlayerService(IPlayerRepository repository, AppDbContext dbContext)
         return true;
     }
 
-    public async Task<bool> DeletePlayer(Player player)
+    public async Task<bool> RemovePlayer(Player player)
     {
         _repository.RemovePlayer(player);
         await _dbContext.SaveChangesAsync();

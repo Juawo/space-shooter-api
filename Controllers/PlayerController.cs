@@ -54,7 +54,7 @@ public class PlayerController(PlayerService playerService) : ControllerBase
     {
         var player = await _playerService.GetPlayerById(playerId);
         if (player == null) return NotFound();
-        await _playerService.DeletePlayer(player);
+        await _playerService.RemovePlayer(player);
         return NoContent();
     }
     
