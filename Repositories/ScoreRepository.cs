@@ -18,9 +18,9 @@ public class ScoreRepository(AppDbContext dbContext) : IScoreRepository
     public async Task CreateScore(Score score)
         => await _dbContext.Scores.AddAsync(score);
 
-    public async void UpdateScore(Score score)
+    public void UpdateScore(Score score)
         =>  _dbContext.Scores.Update(score);
     
-    public async void RemoveScore(Score score)
+    public void RemoveScore(Score score)
         => _dbContext.Scores.Remove(score);
 }
