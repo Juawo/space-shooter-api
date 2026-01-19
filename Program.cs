@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SpaceShooterApi.Database;
 using SpaceShooterApi.Interfaces.Repositories;
+using SpaceShooterApi.Middleware;
 using SpaceShooterApi.Repositories;
 using SpaceShooterApi.Services;
 
@@ -26,7 +27,7 @@ builder.Services.AddScoped<PlayerService>();
 builder.Services.AddScoped<ScoreService>();
 
 var app = builder.Build();
-
+app.UseMiddleware<ExceptionHandlingMiddleware>(); 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
