@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SpaceShooterApi.Database;
 using SpaceShooterApi.Interfaces.Repositories;
+using SpaceShooterApi.Models;
 using SpaceShooterApi.Repositories;
 using SpaceShooterApi.Services;
 
@@ -15,8 +16,10 @@ builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 
 // Repositories
 builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+builder.Services.AddScoped<IScoreRepository, ScoreRepository>();
 // Services
 builder.Services.AddScoped<PlayerService>();
+builder.Services.AddScoped<ScoreService>();
 
 var app = builder.Build();
 
