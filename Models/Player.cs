@@ -9,6 +9,7 @@ public class Player
     public required  string Nickname { get;  set; }
     public required int Age { get;  set; }
     public required string Country { get; set; }
+    public HighScore HighScore { get;  set; }
 
     public Player()
     {

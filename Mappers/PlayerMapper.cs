@@ -10,6 +10,7 @@ public static class PlayerMapper
     {
         return new PlayerDto
         (
+            player.Id,
            player.Nickname,
            player.Country
         );

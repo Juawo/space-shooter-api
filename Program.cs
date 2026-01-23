@@ -21,10 +21,10 @@ builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 
 // Repositories
 builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
-builder.Services.AddScoped<IScoreRepository, ScoreRepository>();
+builder.Services.AddScoped<IHighScoreRepository, HighHighScoreRepository>();
 // Services
 builder.Services.AddScoped<PlayerService>();
-builder.Services.AddScoped<ScoreService>();
+builder.Services.AddScoped<HighScoreService>();
 
 var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>(); 
