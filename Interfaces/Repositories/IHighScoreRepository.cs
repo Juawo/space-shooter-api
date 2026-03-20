@@ -7,6 +7,7 @@ public interface IHighScoreRepository
     Task<IEnumerable<HighScore>> GetAllScore();
     Task<HighScore?> GetScoreById(Guid scoreId);
     Task<HighScore?> GetScoreByPlayerId(Guid playerId);
+    Task<List<HighScore>> GetScoresWithPlayers();
     Task CreateScore(HighScore score);
     void UpdateScore(HighScore score);
     void RemoveScore(HighScore score);

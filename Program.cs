@@ -21,7 +21,7 @@ builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 
 // Repositories
 builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
-builder.Services.AddScoped<IHighScoreRepository, HighHighScoreRepository>();
+builder.Services.AddScoped<IHighScoreRepository, HighScoreRepository>();
 // Services
 builder.Services.AddScoped<PlayerService>();
 builder.Services.AddScoped<HighScoreService>();

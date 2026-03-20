@@ -12,10 +12,13 @@ public class HighScoreService(IHighScoreRepository highScoreRepository, AppDbCon
     public async Task<HighScore?> GetScoreById(Guid scoreId)
         => await highScoreRepository.GetScoreById(scoreId);
 
-    // TODO : Terminar essa func
     public async Task<HighScore?> GetScoreByPlayerId(Guid playerId)
         => await highScoreRepository.GetScoreByPlayerId(playerId);
-    
+
+    public async Task<List<HighScore>> GetScoresWithPlayers()
+    {
+        return await highScoreRepository.GetScoresWithPlayers();
+    }
     
     public async Task<bool> CreateScore(HighScore score)
     {
@@ -23,6 +26,7 @@ public class HighScoreService(IHighScoreRepository highScoreRepository, AppDbCon
         await appDbContext.SaveChangesAsync();
         return true;
     }
+    
     public async Task<bool> UpdateScore(HighScore score)
     {
         var oldScore = await highScoreRepository.GetScoreById(score.Id);
@@ -31,6 +35,7 @@ public class HighScoreService(IHighScoreRepository highScoreRepository, AppDbCon
         await appDbContext.SaveChangesAsync();
         return true;
     }
+    
     public async Task<bool> RemoveScore(HighScore score)
     {
         highScoreRepository.RemoveScore(score);

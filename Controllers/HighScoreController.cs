@@ -28,6 +28,18 @@ public class HighScoreController : ControllerBase
         
         return Ok(scores);
     }
+    
+    [HttpGet("leaderboard/{playerId:guid}")]
+    public async Task<IActionResult> GetLeaderboard([FromRoute] Guid playerId)
+    {
+        var player = await _playerService.GetPlayerById(playerId);
+        if (player == null) return NotFound("Player not found");
+        var scores =
+            (await _highScoreService.GetScoresWithPlayers())
+            .Select(score => score.ToScoreLeaderboardFromScore());
+        
+        return Ok(scores);
+    }
 
     [HttpGet("{playerId:guid}/{scoreId:guid}")]
     public async Task<IActionResult> GetScoreById([FromRoute] Guid scoreId, [FromRoute] Guid playerId)

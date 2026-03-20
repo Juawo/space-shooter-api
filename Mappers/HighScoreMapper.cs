@@ -10,6 +10,7 @@ public static class HighScoreMapper
     {
         return new HighScoreDto(
             score.PlayerId,
+            HighScoreId: score.Id,
             score.Value,
             score.UpdatedAt
         );
@@ -21,5 +22,13 @@ public static class HighScoreMapper
         {
             Value = highScoreDto.Value
         };
+    }
+    public static HighScoreLeaderboardDto ToScoreLeaderboardFromScore(this HighScore highScore)
+    {
+        return new HighScoreLeaderboardDto(
+            highScore.Player.Nickname,
+            highScore.Value,
+            highScore.UpdatedAt
+        );
     }
 }

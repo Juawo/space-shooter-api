@@ -5,7 +5,7 @@ using SpaceShooterApi.Models;
 
 namespace SpaceShooterApi.Repositories;
 
-public class HighHighScoreRepository(AppDbContext dbContext) : IHighScoreRepository
+public class HighScoreRepository(AppDbContext dbContext) : IHighScoreRepository
 {
     private readonly AppDbContext _dbContext = dbContext;
 
@@ -18,6 +18,15 @@ public class HighHighScoreRepository(AppDbContext dbContext) : IHighScoreReposit
     public async Task<HighScore?> GetScoreByPlayerId(Guid playerId)
         => await _dbContext.HighScores.FirstOrDefaultAsync(score => score.PlayerId == playerId);
 
+    public async Task<List<HighScore>> GetScoresWithPlayers()
+    {
+        return await _dbContext.HighScores
+            .Include(score => score.Player)
+            .OrderByDescending(score => score.Value)
+            .Take(20)
+            .ToListAsync();
+    }
+    
     public async Task CreateScore(HighScore score)
         => await _dbContext.HighScores.AddAsync(score);
 
