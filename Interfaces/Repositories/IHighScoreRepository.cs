@@ -9,6 +9,6 @@ public interface IHighScoreRepository
     Task<HighScore?> GetScoreByPlayerId(Guid playerId);
     Task<List<HighScore>> GetScoresWithPlayers();
     Task CreateScore(HighScore score);
-    void UpdateScore(HighScore score);
-    void RemoveScore(HighScore score);
+    Task UpdateScore(HighScore score);
+    Task RemoveScore(HighScore score);
 }
