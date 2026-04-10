@@ -6,8 +6,10 @@ public interface IPlayerRepository
 {
     Task<IEnumerable<Player>> GetAllPlayers();
     Task<Player?> GetPlayerById(Guid playerId);
+    Task<Player?> GetPlayerByNickname(string nickname);
+    Task<bool> NicknameExistsForAnotherPlayer(string nickname, Guid playerId);
     Task CreatePlayer(Player player);
-    void UpdatePlayer(Player player);
-    void RemovePlayer(Player player);
+    Task UpdatePlayer(Player player);
+    Task RemovePlayer(Player player);
 
 }
