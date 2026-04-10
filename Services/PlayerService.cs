@@ -38,7 +38,7 @@ public class PlayerService(IPlayerRepository repository)
             Result<IEnumerable<Player?>>.Failure(ErrorType.NotFound) :
             Result<IEnumerable<Player?>>.Ok(players);
     }
-
+    
     public async Task<Result<bool>> UpdatePlayer(Player player)
     {
         var nicknameConflict = await _repository.NicknameExistsForAnotherPlayer(player.Nickname, player.Id);

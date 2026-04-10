@@ -22,7 +22,7 @@ public class PlayerController(PlayerService playerService) : ControllerBase
         
         return result.Error switch
         {
-            ErrorType.None => Ok(result.Data.Select(player => player.ToPlayerDto())),
+            ErrorType.None => Ok(result.Data.Where(p => p != null).Select(player => player.ToPlayerDto())),
             ErrorType.NotFound => NotFound(),
             _ => BadRequest()
         };
