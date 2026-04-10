@@ -22,8 +22,10 @@ public class PlayerRepository(AppDbContext dbContext) : IPlayerRepository
     }
 
     public async Task CreatePlayer(Player player)
-        => await dbContext.Players.AddAsync(player);
-
+    {
+        await dbContext.Players.AddAsync(player);
+        await dbContext.SaveChangesAsync();
+    }
     public async Task UpdatePlayer(Player player)
     {
         dbContext.Update(player);

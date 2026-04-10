@@ -2,9 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpaceShooterApi.DTOs.PlayerDtos;
 using SpaceShooterApi.Mappers;
+using SpaceShooterApi.Models;
 using SpaceShooterApi.Services;
 
 namespace SpaceShooterApi.Controllers;
+
+// TODO : Ajustar CONTROLLER para utilizar ResultObject
 
 [Route("api/[controller]")]
 [ApiController]
@@ -15,48 +18,75 @@ public class PlayerController(PlayerService playerService) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllPlayers()
     {
-        var players = (await _playerService.GetAllPlayers()).Select(player => player.ToPlayerDto());
-        return Ok(players);
+        var result = await _playerService.GetAllPlayers();
+        
+        return result.Error switch
+        {
+            ErrorType.None => Ok(result.Data.Select(player => player.ToPlayerDto())),
+            ErrorType.NotFound => NotFound(),
+            _ => BadRequest()
+        };
     }
 
     [HttpGet("{playerId:guid}")]
     public async Task<IActionResult> GetPlayerById([FromRoute] Guid playerId)
     {
-        var player = await _playerService.GetPlayerById(playerId);
-        if(player == null) return NotFound();
-        return Ok(player.ToPlayerDto()) ;
+        var result = await _playerService.GetPlayerById(playerId);
+
+        return result.Error switch
+        {
+            ErrorType.None => Ok(result.Data.ToPlayerDto()),
+            ErrorType.NotFound => NotFound(),
+            _ => BadRequest()
+        };
     }
 
     [HttpPost]
     public async Task<IActionResult> CreatePlayer([FromBody] CreatePlayerRequestDto createPlayerDto)
     {
         var player = createPlayerDto.ToPlayerFromCreateDto();
-        await _playerService.CreatePlayer(player);
-        return CreatedAtAction(nameof(GetPlayerById), new { playerId = player.Id }, player.ToPlayerDto());
+        var result = await _playerService.CreatePlayer(player);
+        return result.Error switch
+        {
+            ErrorType.None => CreatedAtAction(nameof(GetPlayerById), new { playerId = result.Data.Id },
+                result.Data.ToPlayerDto()),
+            ErrorType.Conflict => Conflict(),
+            ErrorType.ValidationError => ValidationProblem(),
+            _ => BadRequest()
+        };
     }
 
     [HttpPut("{playerId:guid}")]
     public async Task<IActionResult> UpdatePlayer([FromRoute] Guid playerId,
         [FromBody] UpdatePlayerRequestDto updatePlayerDto)
     {
-        var player = await _playerService.GetPlayerById(playerId);
-        if (player == null) return NotFound();
+        var result = await _playerService.GetPlayerById(playerId);
+        if (result.Error == ErrorType.NotFound) return NotFound();
         
-        player.Nickname = updatePlayerDto.Nickname;
-        player.Age = updatePlayerDto.Age;
-        player.Country = updatePlayerDto.Country;
+        result.Data.Nickname = updatePlayerDto.Nickname;
+        result.Data.Age = updatePlayerDto.Age;
+        result.Data.Country = updatePlayerDto.Country;
         
-        await _playerService.UpdatePlayer(player);
-        return NoContent();
+        var updateResult = await _playerService.UpdatePlayer(result.Data);
+        return updateResult.Error switch
+        {
+            ErrorType.None => NoContent(),
+            ErrorType.Conflict => Conflict(),
+            ErrorType.ValidationError => ValidationProblem(),
+            _ => BadRequest()
+        };
     }
 
     [HttpDelete("{playerId:guid}")]
     public async Task<IActionResult> DeletePlayer([FromRoute] Guid playerId)
     {
-        var player = await _playerService.GetPlayerById(playerId);
-        if (player == null) return NotFound();
-        await _playerService.RemovePlayer(player);
-        return NoContent();
+        var result = await _playerService.RemovePlayer(playerId);
+        return result.Error switch
+        {
+            ErrorType.None => NoContent(),
+            ErrorType.NotFound => NotFound(),
+            _ => BadRequest()
+        };
     }
     
 }
