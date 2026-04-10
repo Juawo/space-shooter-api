@@ -77,6 +77,21 @@ public class PlayerController(PlayerService playerService) : ControllerBase
         };
     }
 
+    [HttpPatch("{playerId:guid}")]
+    public async Task<IActionResult> UpdatePlayerNickname([FromRoute] Guid playerId,
+        [FromBody] UpdatePlayerNicknameRequestDto updatePlayerNickname)
+    {
+        var result = await _playerService.UpdatePlayerNickname(playerId, updatePlayerNickname.Nickname);
+        return result.Error switch
+        {
+            ErrorType.None => NoContent(),
+            ErrorType.NotFound => NotFound(),
+            ErrorType.Conflict => Conflict(),
+            ErrorType.ValidationError => ValidationProblem(),
+            _ => BadRequest()
+        };
+    }
+
     [HttpDelete("{playerId:guid}")]
     public async Task<IActionResult> DeletePlayer([FromRoute] Guid playerId)
     {
