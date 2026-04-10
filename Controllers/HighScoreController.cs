@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SpaceShooterApi.DTOs.HighScoreDtos;
 using SpaceShooterApi.Mappers;
+using SpaceShooterApi.Models;
 using SpaceShooterApi.Services;
 
 namespace SpaceShooterApi.Controllers;
@@ -17,89 +18,70 @@ public class HighScoreController : ControllerBase
         _highScoreService = highScoreService;
         _playerService = playerService;
     }
-    
+
     [HttpGet("{playerId:guid}")]
     public async Task<IActionResult> GetAllScores(Guid playerId)
     {
-        var player = await _playerService.GetPlayerById(playerId);
-        if (player == null) return NotFound();
-        
-        var scores = (await _highScoreService.GetAllScore()).Select(score => score.ToScoreDto());
-        
-        return Ok(scores);
+        var scoresResult = await _highScoreService.GetAllScore(playerId);
+
+        return scoresResult.Error == ErrorType.None
+            ? Ok(scoresResult.Data.Where(s => s != null).Select(s => s.ToScoreDto()))
+            : NotFound();
     }
-    
+
     [HttpGet("leaderboard/{playerId:guid}")]
     public async Task<IActionResult> GetLeaderboard([FromRoute] Guid playerId)
     {
-        var player = await _playerService.GetPlayerById(playerId);
-        if (player == null) return NotFound("Player not found");
-        var scores =
-            (await _highScoreService.GetScoresWithPlayers())
-            .Select(score => score.ToScoreLeaderboardFromScore());
+        var scoresResult = await _highScoreService.GetScoresWithPlayers(playerId);
         
-        return Ok(scores);
+        return scoresResult.Error == ErrorType.None
+                ? Ok(scoresResult.Data.Select(s => s.ToScoreDto()))
+                : NotFound();
     }
 
     [HttpGet("{playerId:guid}/{scoreId:guid}")]
     public async Task<IActionResult> GetScoreById([FromRoute] Guid scoreId, [FromRoute] Guid playerId)
     {
-        var player = await _playerService.GetPlayerById(playerId);
-        if (player == null) return NotFound("Player not found");
-        
-        var score = await  _highScoreService.GetScoreById(scoreId);
-        
-        if (score == null)  return NotFound("Score not found");
-        return Ok(score.ToScoreDto());
+        var scoreResult = await  _highScoreService.GetScoreById(scoreId, playerId);
+        return scoreResult.Error == ErrorType.None ?
+                Ok(scoreResult.Data.ToScoreDto()) :
+                NotFound();
     }
 
     [HttpPost("{playerId:guid}")]
     public async Task<IActionResult> CreateScore([FromBody] CreateHighScoreRequestDto createHighScoreDto, [FromRoute] Guid playerId)
     {
-        var player = await _playerService.GetPlayerById(playerId);
-        if (player == null) return NotFound("Player not found");
-        
-        var existingScore = await _highScoreService.GetScoreByPlayerId(playerId);
-        if(existingScore != null)  return Conflict("Score already exists");
-        
         var score = createHighScoreDto.ToScoreFromCreateScoreDto(); 
         score.PlayerId = playerId;
         score.UpdatedAt = DateTime.UtcNow;
         
-        await _highScoreService.CreateScore(score);
-        return CreatedAtAction(nameof(GetScoreById), new { scoreId = score.Id }, score.ToScoreDto());
+        var createResult = await _highScoreService.CreateScore(score);
+        return createResult.Error == ErrorType.None ?
+            CreatedAtAction(nameof(GetScoreById), new { scoreId = score.Id }, score.ToScoreDto()) :
+            NotFound();
     }
 
-    [HttpPut("{playerId:guid}/{scoreId:guid}")]
-    public async Task<IActionResult> UpdateScore([FromRoute] Guid playerId, [FromRoute] Guid scoreId,
-        [FromBody] UpdateHighScoreRequestDto updateHighScoreDto)
+    [HttpPatch("{playerId:guid}/{scoreId:guid}")]
+    public async Task<IActionResult> UpdateScoreValue([FromRoute] Guid playerId, [FromRoute] Guid scoreId,
+        [FromBody] UpdateHighScoreRequestDto highScoreValueDto)
     {
-        var player = await _playerService.GetPlayerById(playerId);
-        if (player == null) return NotFound("Player not found");
-        
-        var score = await _highScoreService.GetScoreById(scoreId);
-        if (score == null) return NotFound("Score not found");
-        
-        if(score.Value > updateHighScoreDto.Value) 
-            return BadRequest("Score value is not bigger than old score! ");
-        
-        score.Value = updateHighScoreDto.Value;
-        score.UpdatedAt = DateTime.UtcNow;
-        await _highScoreService.UpdateScore(score);
-        return NoContent();
+        var updateResult = await  _highScoreService.UpdateScoreValue(playerId, scoreId, highScoreValueDto.Value);
+        return updateResult.Error switch
+        {
+            ErrorType.None => NoContent(),
+            ErrorType.NotFound => NotFound(),
+            ErrorType.ValidationError => ValidationProblem()
+        };
+
     }
     
     [HttpDelete("{playerId:guid}/{scoreId:guid}")]
     public async Task<IActionResult> DeleteScore([FromRoute] Guid playerId, [FromRoute] Guid scoreId)
     {
-        var player = await _playerService.GetPlayerById(playerId);
-        if (player == null) return NotFound();
+        var removeResult = await _highScoreService.RemoveScore(playerId, scoreId);
         
-        var score = await _highScoreService.GetScoreById(scoreId);
-        if (score == null) return NotFound();
-        
-        await _highScoreService.RemoveScore(score);
-        
-        return NoContent();
+        return removeResult.Error == ErrorType.None ?
+                NoContent() :
+                NotFound("Score not found");
     }
 }
