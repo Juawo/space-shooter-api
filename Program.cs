@@ -27,7 +27,14 @@ builder.Services.AddScoped<PlayerService>();
 builder.Services.AddScoped<HighScoreService>();
 
 var app = builder.Build();
-app.UseMiddleware<ExceptionHandlingMiddleware>(); 
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
