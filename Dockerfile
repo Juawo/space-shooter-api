@@ -1,18 +1,11 @@
-﻿# Estágio de Build
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+﻿# Estágio de Build - Mude de 9.0 para 10.0
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /app
 
-# Copiar arquivos e restaurar dependências
-COPY *.sln .
-COPY *.csproj .
-RUN dotnet restore
+# ... (restante igual)
 
-# Copiar tudo e publicar
-COPY . .
-RUN dotnet publish -c Release -o out
-
-# Estágio de Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
+# Estágio de Runtime - Mude de 9.0 para 10.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build /app/out .
 
