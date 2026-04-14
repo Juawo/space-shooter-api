@@ -46,14 +46,15 @@ public class HighScoreService(IHighScoreRepository highScoreRepository, IPlayerR
             Result<List<HighScore>>.Failure(ErrorType.NotFound) :
             Result<List<HighScore>>.Ok(highScores);
     }
-    
+   
     public async Task<Result<bool>> CreateScore(HighScore score)
     {
         var existPlayer = await playerRepository.GetPlayerById(score.PlayerId);
         if (existPlayer == null) return Result<bool>.Failure(ErrorType.NotFound);
         
-        var existHighScore = await highScoreRepository.GetScoreById(score.Id);
-        if (existHighScore == null) return Result<bool>.Failure(ErrorType.NotFound);
+        var existHighScore = await highScoreRepository.GetScoreByPlayerId(score.PlayerId);
+        if (existHighScore != null) return Result<bool>.Failure(ErrorType.Conflict);
+        
         await highScoreRepository.CreateScore(score);
         
         return Result<bool>.Ok(true);
@@ -63,7 +64,7 @@ public class HighScoreService(IHighScoreRepository highScoreRepository, IPlayerR
     {
         var oldScore = await highScoreRepository.GetScoreById(highScoreId);
         if(oldScore == null)  return Result<bool>.Failure(ErrorType.NotFound);
-        if (oldScore.Value > value || oldScore.PlayerId != playerId) return Result<bool>.Failure(ErrorType.ValidationError);
+        if (oldScore.Value >= value || oldScore.PlayerId != playerId) return Result<bool>.Failure(ErrorType.ValidationError);
         
         oldScore.Value = value;
         await highScoreRepository.UpdateScore(oldScore);

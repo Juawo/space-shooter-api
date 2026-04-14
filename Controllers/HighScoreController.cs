@@ -47,7 +47,7 @@ public class HighScoreController : ControllerBase
                 Ok(scoreResult.Data.ToScoreDto()) :
                 NotFound();
     }
-
+    // Sugestão : Tirar o playerId da rota, e colocar no DTO
     [HttpPost("{playerId:guid}")]
     public async Task<IActionResult> CreateScore([FromBody] CreateHighScoreRequestDto createHighScoreDto, [FromRoute] Guid playerId)
     {
@@ -56,9 +56,13 @@ public class HighScoreController : ControllerBase
         score.UpdatedAt = DateTime.UtcNow;
         
         var createResult = await _highScoreService.CreateScore(score);
-        return createResult.Error == ErrorType.None ?
-            CreatedAtAction(nameof(GetScoreById), new { scoreId = score.Id }, score.ToScoreDto()) :
-            NotFound();
+        return createResult.Error switch
+        {
+            ErrorType.None => CreatedAtAction(nameof(GetScoreById), new { scoreId = score.Id }, score.ToScoreDto()),
+            ErrorType.NotFound => NotFound(),
+            ErrorType.Conflict => Conflict()
+        };
+
     }
 
     [HttpPatch("{playerId:guid}/{scoreId:guid}")]
