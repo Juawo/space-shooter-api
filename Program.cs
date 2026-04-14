@@ -6,7 +6,7 @@ using SpaceShooterApi.Repositories;
 using SpaceShooterApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
