@@ -1,5 +1,5 @@
 namespace SpaceShooterApi.Middleware;
-
+// TODO : Corrigir esse middleware, os erros ainda caem nos retornos expondo muitas coisas
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;

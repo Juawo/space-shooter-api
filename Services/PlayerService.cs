@@ -63,13 +63,13 @@ public class PlayerService(IPlayerRepository repository)
         if (player == null)
             return Result<bool>.Failure(ErrorType.NotFound);
 
-        if (nickname.Length < 3 || nickname.Length > 12)
+        if (nickname.Length < 3 || nickname.Length > 12 || nickname == player.Nickname)
             return Result<bool>.Failure(ErrorType.ValidationError);
-        
-        var uniqueNickname = await _repository.GetPlayerByNickname(nickname);
-        if (uniqueNickname != null)
-            return Result<bool>.Failure(ErrorType.Conflict);
 
+        var uniqueNickname = await _repository.NicknameExistsForAnotherPlayer(nickname, playerId);
+        if (uniqueNickname)
+            return Result<bool>.Failure(ErrorType.Conflict);
+        
         player.Nickname = nickname;
         await _repository.UpdatePlayer(player);
         return Result<bool>.Ok(true);
