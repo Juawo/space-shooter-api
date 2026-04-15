@@ -35,7 +35,7 @@ public class HighScoreController : ControllerBase
         var scoresResult = await _highScoreService.GetScoresWithPlayers(playerId);
         
         return scoresResult.Error == ErrorType.None
-                ? Ok(scoresResult.Data.Select(s => s.ToScoreDto()))
+                ? Ok(scoresResult.Data.Select(s => s.ToScoreLeaderboardFromScore()))
                 : NotFound();
     }
 
