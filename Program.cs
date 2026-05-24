@@ -22,9 +22,11 @@ builder.Services.AddDbContext<AppDbContext>(optionsBuilder =>
 // Repositories
 builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
 builder.Services.AddScoped<IHighScoreRepository, HighScoreRepository>();
+builder.Services.AddScoped<IGameVersionsRepository, GameVersionsRepository>();
 // Services
 builder.Services.AddScoped<PlayerService>();
 builder.Services.AddScoped<HighScoreService>();
+builder.Services.AddScoped<GameVersionsService>();
 
 var app = builder.Build();
 
