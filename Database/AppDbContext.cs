@@ -7,6 +7,7 @@ public class AppDbContext : DbContext
 {
     public DbSet<Player> Players { get; set; }
     public DbSet<HighScore> HighScores { get; set; }
+    public DbSet<GameVersion> GameVersions { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {}
     
