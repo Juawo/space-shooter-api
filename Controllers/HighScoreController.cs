@@ -5,7 +5,7 @@ using SpaceShooterApi.Models;
 using SpaceShooterApi.Services;
 
 namespace SpaceShooterApi.Controllers;
-// TODO : Todas as rotas de Score precisam do ID de um player
+// TODO : Add sample cache for leaderboard!
 [Route("api/[controller]")]
 [ApiController]
 public class HighScoreController : ControllerBase
